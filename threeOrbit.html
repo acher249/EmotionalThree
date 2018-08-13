@@ -60,18 +60,30 @@
             //********************************************************************** */
             getCurrentMoodObjectFromDB();
             setTimeout(getDataFromObject, 1000);
+            setTimeout(init, 1500);
 
             var data;
+            var mainEmotionValue;
 
             function getCurrentMoodObjectFromDB(){
+                
+                database.ref().on("child_changed", function(data) {
+                    // refresh the page
+                    location.reload();
+                    console.log(" Child data was changed in DB. Refreshed the Page.");
+                });
 
                 //this will give back everything from the db
                 database.ref().on("value", function(snapshot) {
+                    //refresh the page
+                    // location.reload();
+
                     data = snapshot.val();
                     console.log("DATA SNAPSHOT FROM DB:");
                     console.log(data);
                     //this is the Array *****
                     // imageArrayFromDb = data.imageArray;
+
 
                 }, function (errorObject) {
                     console.log("The read failed: " + errorObject.code);
@@ -101,7 +113,6 @@
 
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 			var camera, controls, scene, renderer;
-			init();
 			//render(); // remove when using next line for animation loop (requestAnimationFrame)
 			animate();
 			function init() {
@@ -125,7 +136,7 @@
 				controls.maxPolarAngle = Math.PI / 2;
                 // world
                 //Geometry For Updating
-				var geometry = new THREE.CylinderBufferGeometry( 0/*Top Radius*/, 10/*width*/, 30/*height*/, 4/*Sides*/, 1 );
+				var geometry = new THREE.CylinderBufferGeometry( 0/*Top Radius*/, 10/*width*/, mainEmotionValue*2/*height*/, 4/*Sides*/, 1 );
 				var material = new THREE.MeshPhongMaterial( { color: 0xffffff, flatShading: true } );
 				for ( var i = 0; i < 500; i ++ ) {
 					var mesh = new THREE.Mesh( geometry, material );
@@ -155,7 +166,7 @@
 			}
 			function animate() {
 				requestAnimationFrame( animate );
-				controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
+				// controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
 				render();
 			}
 			function render() {
