@@ -4,7 +4,8 @@
 		<title>three.js webgl - orbit controls</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<style>
+        <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase.js"></script>
+        <style>
 			body {
 				color: #000;
 				font-family:Monospace;
@@ -35,9 +36,69 @@
         <!-- Dependancies.. Add these into directory -->
 		<script src="./js/three.js"></script>
 		<script src="./js/OrbitControls.js"></script>
-		<script src="./js/detector.js"></script>
+        <script src="./js/detector.js"></script>
 
 		<script>
+
+        //Firebase
+            //********************************************************************** */
+            //********************************************************************** */
+
+            // Initialize Firebase
+            var config = {
+                apiKey: "AIzaSyBtpUV8mrHN6p214Q5DSt1h0Lw7VJLnypQ",
+                authDomain: "emotionalthree.firebaseapp.com",
+                databaseURL: "https://emotionalthree.firebaseio.com",
+                projectId: "emotionalthree",
+                storageBucket: "emotionalthree.appspot.com",
+                messagingSenderId: "1034068477652"
+            };
+            firebase.initializeApp(config);
+            var database = firebase.database();
+
+            //********************************************************************** */
+            //********************************************************************** */
+            getCurrentMoodObjectFromDB();
+            setTimeout(getDataFromObject, 1000);
+
+            var data;
+
+            function getCurrentMoodObjectFromDB(){
+
+                //this will give back everything from the db
+                database.ref().on("value", function(snapshot) {
+                    data = snapshot.val();
+                    console.log("DATA SNAPSHOT FROM DB:");
+                    console.log(data);
+                    //this is the Array *****
+                    // imageArrayFromDb = data.imageArray;
+
+                }, function (errorObject) {
+                    console.log("The read failed: " + errorObject.code);
+                })
+            };
+
+            function getDataFromObject(){
+                //Get Emotional Values from DB
+                happiness = data.currentMood.happiness;
+                sadness = data.currentMood.sadness;
+                fear = data.currentMood.fear;
+                anger = data.currentMood.anger;
+                disgust = data.currentMood.disgust;
+                surprise = data.currentMood.surprise;
+
+                var emotionArray = new Array(happiness, sadness, fear, anger, disgust, surprise);
+                // console.log(emotionArray);
+
+                emotionArray.sort(function(a, b){return b-a});
+                // console.log("sorted: " + emotionArray);
+                // console.log("**************************");
+                mainEmotionValue = emotionArray[0];
+                console.log("mainEmotionValue: " + mainEmotionValue);
+
+                //Still need to get back mainEmotion - string
+            }
+
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 			var camera, controls, scene, renderer;
 			init();
@@ -62,8 +123,9 @@
 				controls.minDistance = 100;
 				controls.maxDistance = 500
 				controls.maxPolarAngle = Math.PI / 2;
-				// world
-				var geometry = new THREE.CylinderBufferGeometry( 0, 10, 30, 4, 1 );
+                // world
+                //Geometry For Updating
+				var geometry = new THREE.CylinderBufferGeometry( 0/*Top Radius*/, 10/*width*/, 30/*height*/, 4/*Sides*/, 1 );
 				var material = new THREE.MeshPhongMaterial( { color: 0xffffff, flatShading: true } );
 				for ( var i = 0; i < 500; i ++ ) {
 					var mesh = new THREE.Mesh( geometry, material );

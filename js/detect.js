@@ -49,14 +49,15 @@
 
     // Initialize Firebase
     var config = {
-        apiKey: "AIzaSyAJL8x08SRMEYMMtn13bD69hZHjWZC_zmM",
-        authDomain: "mud-4e9fe.firebaseapp.com",
-        databaseURL: "https://mud-4e9fe.firebaseio.com",
-        projectId: "mud-4e9fe",
-        storageBucket: "mud-4e9fe.appspot.com",
-        messagingSenderId: "350533286927"
-    };
-    firebase.initializeApp(config);
+        apiKey: "AIzaSyBtpUV8mrHN6p214Q5DSt1h0Lw7VJLnypQ",
+        authDomain: "emotionalthree.firebaseapp.com",
+        databaseURL: "https://emotionalthree.firebaseio.com",
+        projectId: "emotionalthree",
+        storageBucket: "emotionalthree.appspot.com",
+        messagingSenderId: "1034068477652"
+      };
+      firebase.initializeApp(config);
+      var database = firebase.database();
 
     //********************************************************************** */
     //********************************************************************** */
@@ -305,6 +306,18 @@
                             // console.log("anger: " + anger);
                             // console.log("disgust: " + disgust);
                             // console.log("surprise: " + surprise);
+
+                            database.ref().set({
+                                currentMood: {
+                                    happiness: happiness,
+                                    sadness: sadness,
+                                    fear: fear,
+                                    anger: anger,
+                                    disgust: disgust,
+                                    surprise: surprise,
+                                    dateAdded: firebase.database.ServerValue.TIMESTAMP
+                                },
+                            });
 
                             // HTML object defined at top
                             // Also add class of data number
